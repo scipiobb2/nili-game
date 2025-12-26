@@ -6,6 +6,11 @@
 build/
 export/
 
+# Keep export dirs in repo so Godot/CI won't fail
+!game/build/
+!game/build/web/
+!game/build/web/.gitkeep
+
 # --- OS / IDE ---
 .DS_Store
 Thumbs.db
