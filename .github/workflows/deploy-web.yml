@@ -39,37 +39,43 @@ jobs:
           apt-get install -y --no-install-recommends fontconfig libfontconfig1
           fc-cache -f -v || true
 
-      # godot-ci ships templates in /root; Godot expects them in the user's export_templates dir.
+      # CRITICAL FIX HERE:
+      # We move templates into the CUSTOM XDG path defined above, not the default path.
       - name: Setup export templates
         run: |
-          mkdir -p ~/.local/share/godot/export_templates
+          # Create the folder inside your custom .xdg/data directory
+          mkdir -p "$XDG_DATA_HOME/godot/export_templates"
+          
+          # Move templates from the container default to your custom location
           mv /root/.local/share/godot/export_templates/${GODOT_VERSION}.stable \
-             ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+             "$XDG_DATA_HOME/godot/export_templates/${GODOT_VERSION}.stable"
 
-      # Your Web preset expects res://build/web to exist (res:// is PROJECT_PATH).
       - name: Ensure export folder exists
         run: |
           mkdir -p "${EXPORT_DIR}"
 
-      # Keep the plugin for local dev, but do not ship it in Web export.
-      # .gdignore makes Godot ignore the folder in this CI run only.
+      # Disable the git plugin in project.godot to prevent "nullptr VCS" errors during export.
+      # This is safer than just ignoring the folder.
+      - name: Disable Git Plugin for CI
+        run: |
+          if [ -f "${PROJECT_PATH}/project.godot" ]; then
+            sed -i 's/godot-git-plugin=true/godot-git-plugin=false/' "${PROJECT_PATH}/project.godot" || true
+          fi
+
       - name: Exclude editor-only git plugin from export (CI only)
         run: |
           if [ -d "${PROJECT_PATH}/addons/godot-git-plugin" ]; then
             touch "${PROJECT_PATH}/addons/godot-git-plugin/.gdignore"
           fi
 
-      # Export using the preset path defined in export_presets.cfg
       - name: Export Web
         run: |
           godot --headless --verbose --path "${PROJECT_PATH}" \
                 --export-release "${EXPORT_PRESET}"
 
-      # Deploy to GitHub Pages via gh-pages branch
       - name: Deploy to gh-pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
           folder: game/build/web
           clean: true
-
