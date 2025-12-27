@@ -1,0 +1,57 @@
+# Project conventions and boundaries
+
+This document keeps Sprint 0 changes discoverable and makes it clear where deterministic gameplay logic belongs. It should be a fast reference (5 minutes) for new contributors.
+
+## Folder map (high-level)
+
+- `docs/` — contributor-facing guides. Start here for conventions and release process.
+- `game/` — Godot project root.
+  - `game/src/domain/` — **pure deterministic logic** (no Node/SceneTree access). Value objects, rules, and services that can run in headless tests.
+  - `game/src/app/` — orchestration/use-cases that coordinate domain logic. Minimal glue; avoid UI/Node dependencies here.
+  - `game/src/adapters/` — Godot-facing code (scenes, UI controllers, input handlers, signal wiring, resource loaders).
+  - `game/src/shared/` — small shared helpers that stay deterministic (math/collections/time abstractions). Keep this tiny to avoid a dumping ground.
+  - `game/tests/` — automated tests. `unit/` will house pure logic tests exercised via the headless runner.
+  - `build/` — generated export artifacts (not hand-edited).
+
+## Deterministic boundary rules
+
+- **Domain scripts must not call** `Node`, `SceneTree`, `Input`, or frame/time APIs. They should be importable in a headless context with no Godot scene loaded.
+- **No hidden randomness**: if randomness is needed, pass in a seeded RNG interface from the caller; avoid direct `RandomNumberGenerator` inside domain code.
+- **Pure data in/pure data out**: domain functions take explicit arguments and return new values/structs instead of mutating global state.
+- **Adapters own side effects**: file I/O, signals, input polling, timers, and animations belong in adapters; they call into domain/app services with explicit data.
+
+## Naming conventions
+
+- **Scripts**: kebab or snake style for files is allowed by Godot, but prefer `snake_case.gd` that mirrors the main class (e.g., `movement_service.gd` contains `class_name MovementService`).
+- **Classes**: `PascalCase` with `class_name` when the type is meant to be reused; keep one primary class per script.
+- **Tests**: `test_<topic>.gd` with a `run()` function (see runner docs) placed under `game/tests/unit/`.
+- **Scenes**: place scene files under `game/src/adapters/` (or deeper feature folders) and keep script side effects confined to that layer.
+
+## Adding a new deterministic module (example walk-through)
+
+1. Create the script under `game/src/domain/<feature>/` (e.g., `game/src/domain/grid/movement_service.gd`). Keep it free of Node APIs.
+2. Add unit tests under `game/tests/unit/` (e.g., `game/tests/unit/test_movement_service.gd`) exercising both success and failure cases.
+3. Ensure any orchestration that calls the domain module lives in `game/src/app/` and passes plain data objects (value structs, enums).
+4. Adapter/UI scripts should only call into `app` or `domain` via clear methods and should translate Godot signals/input into data the domain understands.
+
+## Good vs. bad dependency examples
+
+- ✅ **Good**: `MovementService` (domain) depends on `GridPos` value object and is invoked by a controller in `app/` that passes the current state.
+- ✅ **Good**: A UI scene script in `adapters/` listens for button presses and calls an `app` use-case, which returns a `MoveResult` struct.
+- 🚫 **Bad**: A script in `domain/` calls `get_tree().create_timer()` or polls `Input`—time/input belong in adapters.
+- 🚫 **Bad**: A scene script directly mutates domain state without going through the use-case/service boundary.
+
+## Testing expectations (Sprint 0 baseline)
+
+- Domain code added in this sprint must have at least one unit test in `game/tests/unit/` demonstrating deterministic behavior.
+- Tests should avoid frame timing and rely on pure functions/structs. Prefer explicit asserts over broad try/except patterns.
+- The headless test runner (added in Sprint 0) will execute all `test_*.gd` scripts and fail fast on the first error; ensure new tests are isolated.
+
+## Quick answers
+
+- **Where do I put deterministic logic?** `game/src/domain/` (pure functions/value objects/services, no Node/SceneTree).
+- **Where does UI/input/scene wiring live?** `game/src/adapters/`.
+- **Where do I coordinate multi-step flows?** `game/src/app/`.
+- **Where do I add tests?** `game/tests/unit/` using the headless runner.
+
+Keeping these boundaries now minimizes refactors when gameplay systems arrive and preserves the determinism required for replay/debug features.
