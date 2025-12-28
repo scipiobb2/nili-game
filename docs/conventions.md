@@ -24,7 +24,7 @@ This document keeps Sprint 0 changes discoverable and makes it clear where deter
 
 - **Scripts**: kebab or snake style for files is allowed by Godot, but prefer `snake_case.gd` that mirrors the main class (e.g., `movement_service.gd` contains `class_name MovementService`).
 - **Classes**: `PascalCase` with `class_name` when the type is meant to be reused; keep one primary class per script.
-- **Tests**: `test_<topic>.gd` with a `run()` function (see runner docs) placed under `game/tests/unit/`.
+- **Tests**: `test_<topic>.gd` files placed under `game/tests/unit/` (subfolders allowed). Each test script can expose multiple `test_*` methods; optional `_before()`/`_after()` hooks run around every test method.
 - **Scenes**: place scene files under `game/src/adapters/` (or deeper feature folders) and keep script side effects confined to that layer.
 
 ## Adding a new deterministic module (example walk-through)
@@ -46,6 +46,20 @@ This document keeps Sprint 0 changes discoverable and makes it clear where deter
 - Domain code added in this sprint must have at least one unit test in `game/tests/unit/` demonstrating deterministic behavior.
 - Tests should avoid frame timing and rely on pure functions/structs. Prefer explicit asserts over broad try/except patterns.
 - The headless test runner (added in Sprint 0) will execute all `test_*.gd` scripts and fail fast on the first error; ensure new tests are isolated.
+
+### Running tests locally (headless)
+
+From the repo root, run:
+
+```
+godot --headless --path game -s res://tests/run_tests.gd
+```
+
+The runner recursively discovers every `test_*.gd` file under `game/tests/unit/`, finds each `test_*` method inside, wraps them with optional `_before()`/`_after()` hooks, and prints pass/fail per test case. Floating-point and vector comparisons use approximate equality by default for `assert_equal` and `assert_near`.
+
+### Running tests from the Godot Editor
+
+Open `game/tests/run_tests.tscn` and press **F6** (Run Current Scene). This uses the same runner logic and exits the editor session with the appropriate code when finished.
 
 ## Quick answers
 
