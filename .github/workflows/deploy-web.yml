@@ -2,13 +2,15 @@ name: Build & Deploy Web
 
 on:
   push:
-    branches: [ main ]
+    tags:
+      - "v*"
 
 env:
   GODOT_VERSION: 4.5.1
   EXPORT_PRESET: Web
   PROJECT_PATH: game
   EXPORT_DIR: game/build/web
+  RELEASE_VERSION: ""
 
 permissions:
   contents: write
@@ -23,6 +25,42 @@ jobs:
         uses: actions/checkout@v4
         with:
           lfs: true
+
+      - name: Require CI to have succeeded for this commit
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const sha = context.sha;
+            const workflowId = 'ci.yml';
+
+            const { data } = await github.actions.listWorkflowRuns({
+              owner,
+              repo,
+              workflow_id: workflowId,
+              head_sha: sha,
+              per_page: 1,
+            });
+
+            const run = data.workflow_runs[0];
+            if (!run) {
+              core.setFailed(`No CI workflow run found for commit ${sha}. Run CI on the commit before tagging a release.`);
+              return;
+            }
+
+            if (run.status !== 'completed' || run.conclusion !== 'success') {
+              core.setFailed(`CI workflow run for ${sha} is not successful (status: ${run.status}, conclusion: ${run.conclusion}). Tag only after CI passes.`);
+            }
+
+      - name: Derive release version from tag
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "RELEASE_VERSION=${VERSION}" >> "$GITHUB_ENV"
+
+      - name: Show release version
+        run: echo "Releasing version ${RELEASE_VERSION} from tag ${GITHUB_REF_NAME}"
 
       # Godot sometimes touches editor caches even in --headless.
       # Using fresh XDG dirs reduces flaky crashes and "doc cache" behavior.
@@ -67,6 +105,34 @@ jobs:
           if [ -d "${PROJECT_PATH}/addons/godot-git-plugin" ]; then
             touch "${PROJECT_PATH}/addons/godot-git-plugin/.gdignore"
           fi
+
+      - name: Set project version from tag
+        run: |
+          if [ -z "${RELEASE_VERSION}" ]; then
+            echo "Release version could not be derived from tag ${GITHUB_REF_NAME}" >&2
+            exit 1
+          fi
+
+          PROJECT_FILE="${PROJECT_PATH}/project.godot"
+          env PROJECT_FILE="$PROJECT_FILE" RELEASE_VERSION="$RELEASE_VERSION" python <<'PY'
+from pathlib import Path
+import os
+import re
+
+project_file = Path(os.environ["PROJECT_FILE"])
+version = os.environ["RELEASE_VERSION"]
+
+data = project_file.read_text()
+if re.search(r"^config/version=", data, flags=re.MULTILINE):
+    data = re.sub(r"^config/version=.*$", f'config/version="{version}"', data, flags=re.MULTILINE)
+else:
+    marker = "[application]"
+    if marker not in data:
+        raise SystemExit(f"{marker} section not found in {project_file}")
+    data = data.replace(f"{marker}\n", f"{marker}\nconfig/version=\"{version}\"\n", 1)
+
+project_file.write_text(data)
+PY
 
       - name: Export Web
         run: |
