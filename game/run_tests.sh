@@ -1,33 +1,16 @@
 #!/bin/bash
 set -euo pipefail
 
+# Get the directory of the script
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-OVERRIDE_FILE="$SCRIPT_DIR/override.cfg"
-OVERRIDE_BACKUP="$SCRIPT_DIR/override.cfg.bak"
 
-cleanup_override() {
-    if [ -f "$OVERRIDE_FILE" ]; then
-        rm -f "$OVERRIDE_FILE"
-    fi
+# 1. IMPORT ASSETS (Safe Mode)
+# --recovery-mode: disables editor plugins and GDExtensions to avoid crashes
+# --import: runs the editor import process and automatically quits
+echo "Building project cache (Safe Mode)..."
+godot --headless --path "$SCRIPT_DIR" --recovery-mode --import
 
-    if [ -f "$OVERRIDE_BACKUP" ]; then
-        mv -f "$OVERRIDE_BACKUP" "$OVERRIDE_FILE"
-    fi
-}
-
-trap cleanup_override EXIT
-
-# 1. CREATE TEMPORARY OVERRIDE TO DISABLE GIT PLUGIN
-if [ -f "$OVERRIDE_FILE" ]; then
-    mv -f "$OVERRIDE_FILE" "$OVERRIDE_BACKUP"
-fi
-
-echo "[editor]" > "$OVERRIDE_FILE"
-echo "version_control/plugin_name=\"\"" >> "$OVERRIDE_FILE"
-echo "version_control/autoload_on_startup=false" >> "$OVERRIDE_FILE"
-
-echo "Building project cache..."
-godot --headless --path "$SCRIPT_DIR" --editor --quit
-
+# 2. RUN TESTS
+# Cache now exists from the import step
 echo "Running tests..."
 godot --headless --path "$SCRIPT_DIR" -s res://tests/run_tests.gd
