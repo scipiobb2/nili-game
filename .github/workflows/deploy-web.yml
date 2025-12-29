@@ -115,23 +115,23 @@ jobs:
 
           PROJECT_FILE="${PROJECT_PATH}/project.godot"
           env PROJECT_FILE="$PROJECT_FILE" RELEASE_VERSION="$RELEASE_VERSION" python <<'PY'
-from pathlib import Path
-import os
-import re
+          from pathlib import Path
+          import os
+          import re
 
-project_file = Path(os.environ["PROJECT_FILE"])
-version = os.environ["RELEASE_VERSION"]
+          project_file = Path(os.environ["PROJECT_FILE"])
+          version = os.environ["RELEASE_VERSION"]
 
-data = project_file.read_text()
-if re.search(r"^config/version=", data, flags=re.MULTILINE):
-    data = re.sub(r"^config/version=.*$", f'config/version="{version}"', data, flags=re.MULTILINE)
-else:
-    marker = "[application]"
-    if marker not in data:
-        raise SystemExit(f"{marker} section not found in {project_file}")
-    data = data.replace(f"{marker}\n", f"{marker}\nconfig/version=\"{version}\"\n", 1)
+          data = project_file.read_text()
+          if re.search(r"^config/version=", data, flags=re.MULTILINE):
+              data = re.sub(r"^config/version=.*$", f'config/version="{version}"', data, flags=re.MULTILINE)
+          else:
+              marker = "[application]"
+              if marker not in data:
+                  raise SystemExit(f"{marker} section not found in {project_file}")
+              data = data.replace(f"{marker}\n", f"{marker}\nconfig/version=\"{version}\"\n", 1)
 
-project_file.write_text(data)
+          project_file.write_text(data)
 PY
 
       - name: Export Web
