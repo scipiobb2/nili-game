@@ -50,7 +50,10 @@ This document keeps Sprint 0 changes discoverable and makes it clear where deter
 ### Running tests locally (headless)
 
 From the repo root, run:
-
+```
+./game/run_tests.sh
+```
+Direct runner invocation (debug fallback):
 ```
 godot --headless --path game -s res://tests/run_tests.gd
 ```
