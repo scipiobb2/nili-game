@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+env:
+  GODOT_VERSION: 4.5.1
+  PROJECT_PATH: game
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    container: barichello/godot-ci:${{ env.GODOT_VERSION }}
+
+    steps:
+      - name: Checkout repo (with LFS)
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      # Use clean Godot user dirs to avoid cached state impacting tests.
+      - name: Use clean Godot user dirs
+        run: |
+          echo "XDG_CONFIG_HOME=$GITHUB_WORKSPACE/.xdg/config" >> $GITHUB_ENV
+          echo "XDG_CACHE_HOME=$GITHUB_WORKSPACE/.xdg/cache" >> $GITHUB_ENV
+          echo "XDG_DATA_HOME=$GITHUB_WORKSPACE/.xdg/data" >> $GITHUB_ENV
+
+      # Ensure font config is present; missing libfontconfig can break headless init.
+      - name: Install runtime deps
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends fontconfig libfontconfig1
+          fc-cache -f -v || true
+
+      - name: Run headless tests
+        working-directory: ${{ env.PROJECT_PATH }}
+        run: |
+          godot --headless --path . -s res://tests/run_tests.gd
