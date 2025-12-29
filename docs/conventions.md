@@ -71,4 +71,10 @@ Open `game/tests/run_tests.tscn` and press **F6** (Run Current Scene). This uses
 - **Where do I coordinate multi-step flows?** `game/src/app/`.
 - **Where do I add tests?** `game/tests/unit/` using the headless runner.
 
+## Release workflow basics
+
+- CI validation lives in `.github/workflows/ci.yml` and runs on PRs and pushes to `main`.
+- Web deployments run only from SemVer tags prefixed with `v` via `.github/workflows/deploy-web.yml`.
+- For the full release playbook, see `docs/release_process.md`.
+
 Keeping these boundaries now minimizes refactors when gameplay systems arrive and preserves the determinism required for replay/debug features.
