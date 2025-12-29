@@ -1,9 +1,16 @@
 #!/bin/bash
+set -euo pipefail
 
-# 1. Trigger the editor import process (headless) to generate .godot/global_script_class_cache.cfg
-echo "Building project cache..."
-godot --headless --path . --editor --quit
+# Get the directory of the script
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 
-# 2. Run the actual tests
+# 1. IMPORT ASSETS (Safe Mode)
+# --recovery-mode: disables editor plugins and GDExtensions to avoid crashes
+# --import: runs the editor import process and automatically quits
+echo "Building project cache (Safe Mode)..."
+godot --headless --path "$SCRIPT_DIR" --recovery-mode --import
+
+# 2. RUN TESTS
+# Cache now exists from the import step
 echo "Running tests..."
-godot --headless --path . -s res://tests/run_tests.gd
+godot --headless --path "$SCRIPT_DIR" -s res://tests/run_tests.gd
