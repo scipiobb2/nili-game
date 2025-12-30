@@ -36,7 +36,7 @@ jobs:
             const sha = context.sha;
             const workflowId = 'ci.yml';
 
-            const { data } = await github.actions.listWorkflowRuns({
+            const { data } = await github.rest.actions.listWorkflowRuns({
               owner,
               repo,
               workflow_id: workflowId,
