@@ -132,7 +132,7 @@ jobs:
               data = data.replace(f"{marker}\n", f"{marker}\nconfig/version=\"{version}\"\n", 1)
 
           project_file.write_text(data)
-PY
+          PY
 
       - name: Export Web
         run: |
