@@ -114,25 +114,30 @@ jobs:
           fi
 
           PROJECT_FILE="${PROJECT_PATH}/project.godot"
-          env PROJECT_FILE="$PROJECT_FILE" RELEASE_VERSION="$RELEASE_VERSION" python <<'PY'
-          from pathlib import Path
-          import os
-          import re
+          if grep -q '^config/version=' "$PROJECT_FILE"; then
+            sed -i "s/^config\/version=.*/config\/version=\"${RELEASE_VERSION}\"/" "$PROJECT_FILE"
+          else
+            if ! grep -q '^\[application\]' "$PROJECT_FILE"; then
+              echo "[application] section not found in ${PROJECT_FILE}" >&2
+              exit 1
+            fi
 
-          project_file = Path(os.environ["PROJECT_FILE"])
-          version = os.environ["RELEASE_VERSION"]
-
-          data = project_file.read_text()
-          if re.search(r"^config/version=", data, flags=re.MULTILINE):
-              data = re.sub(r"^config/version=.*$", f'config/version="{version}"', data, flags=re.MULTILINE)
-          else:
-              marker = "[application]"
-              if marker not in data:
-                  raise SystemExit(f"{marker} section not found in {project_file}")
-              data = data.replace(f"{marker}\n", f"{marker}\nconfig/version=\"{version}\"\n", 1)
-
-          project_file.write_text(data)
-          PY
+            awk -v ver="$RELEASE_VERSION" '
+              BEGIN { inserted = 0 }
+              /^\[application\]$/ {
+                print
+                print "config/version=\"" ver "\""
+                inserted = 1
+                next
+              }
+              { print }
+              END {
+                if (inserted == 0) {
+                  exit 1
+                }
+              }
+            ' "$PROJECT_FILE" >"${PROJECT_FILE}.tmp" && mv "${PROJECT_FILE}.tmp" "$PROJECT_FILE"
+          fi
 
       - name: Export Web
         run: |
