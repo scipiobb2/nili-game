@@ -36,5 +36,4 @@ jobs:
 
       - name: Run headless tests
         working-directory: ${{ env.PROJECT_PATH }}
-        run: |
-          godot --headless --path . -s res://tests/run_tests.gd
+        run: ./run_tests.sh
