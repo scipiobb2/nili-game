@@ -19,6 +19,7 @@ This project uses separate workflows for validation (CI) and publishing (Release
 ## Guardrails
 - Do not push tags for commits that have failing or pending CI checks. The release workflow will fail if it cannot find a successful CI run for the tagged commit, preventing accidental publication of unverified builds.
 - Avoid manually editing `config/version` in `game/project.godot`; it is managed automatically by the Release workflow.
+- Ensure `app_version` is correctly injected from the release tag, since it is a required telemetry envelope field (see `docs/event_schema.md`).
 
 ## Web release checklist (follow every time)
 

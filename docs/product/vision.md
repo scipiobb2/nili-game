@@ -104,9 +104,10 @@ Q4: Where will web be hosted (GitHub Pages is implied by current workflow, but i
 Why: header requirements, caching, CDN behavior.
 Blocks: deployment hardening, analytics endpoint choices.
 Privacy & compliance (kids)
-Q5: Will we collect any analytics beyond anonymous gameplay events?
-Why: COPPA/GDPR-K type considerations; consent flows.
-Blocks: telemetry design, privacy policy, data retention.
+Q5: Telemetry strategy (decision)
+Decision: Telemetry is a first-class product capability. We will collect robust internal-operations telemetry, including stable pseudonymous identifiers (player_id/session_id) to enable longitudinal analysis, debugging, and experimentation.
+Guardrails: avoid direct PII and avoid free-form user text. Telemetry contract lives in docs/event_schema.md.
+Blocks: telemetry implementation sequencing, consent UX wording, data retention policy, backend selection.
 Content & production
 Q6: Target number of levels in MVP and expected session length?
 Why: drives backlog scope and balancing effort.
@@ -147,7 +148,7 @@ Checks Settings: audio toggle, reduced motion.
 Observes child progress (local progress screen).
 Edge cases
 Old Chromebook performance: needs low GPU load and compatibility mode.
-Concern about tracking: needs transparent “what data is collected” and opt-out.
+Concern about tracking: needs transparent “what data is collected”, consent controls (where applicable), and a clear reset/disable option.
 Moments that matter
 Load time and stability: if it doesn’t run, trust is lost immediately.
 System touchpoints
@@ -242,7 +243,7 @@ Suggested SLO: 60 FPS on simple tutorial scenes; 30 FPS minimum on low-end devic
 NFR-002 Determinism: The simulation shall be deterministic across supported platforms so that replays and debugging remain consistent.
 NFR-003 Reliability: The game shall avoid crashes and corrupted local saves; recovery path exists if save data is invalid.
 NFR-004 Web readiness: The game shall run in a desktop browser without special installs and without heavy runtime payloads.
-NFR-005 Security & privacy: The game shall not collect PII in MVP; telemetry (if any) is anonymous and opt-out capable (child-safe default).
+NFR-005 Security & privacy: The game shall avoid direct PII and free-form user text by default. Telemetry is enabled for internal operations and may use stable pseudonymous identifiers (player_id/session_id) as defined in docs/event_schema.md. Telemetry must never block gameplay and should support disable/reset flows.
 NFR-006 Accessibility: The game shall provide at minimum: mute toggle, reduced motion toggle, readable fonts, and non-audio-only feedback for success/failure.
 NFR-007 Inclusivity: UI language and symbols shall be understandable for early readers; avoid reliance on long text instructions.
 NFR-008 Observability: The system shall emit structured events for key actions (start level, run program, fail, replay, win) to support learning and product iteration.
