@@ -41,5 +41,5 @@ func is_goal(position: GridPos) -> bool:
 func is_walkable(position: Vector2i) -> bool:
 	return is_within_bounds(position) and not is_wall(position)
 
-func is_walkable(position: Vector2i) -> bool:
+func is_walkable_pos(pos: GridPos) -> bool:
 	return is_walkable(Vector2i(pos.x, pos.y))
