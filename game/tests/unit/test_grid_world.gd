@@ -17,7 +17,14 @@ func test_grid_world_tracks_bounds_and_walls(test):
 	test.assert_true(world.is_walkable(Vector2i(1, 1)))
 	test.assert_true(not world.is_walkable(Vector2i(0, 1)), "walls are not walkable")
 	test.assert_true(not world.is_walkable(Vector2i(4, 1)), "out of bounds is not walkable")
-
+	
+	var retrieved_walls: Array[Vector2i] = world.get_walls()
+	test.assert_true(retrieved_walls == walls, "wall getter returns configured walls")
+	retrieved_walls.append(Vector2i(3, 3))
+	test.assert_true(not world.is_wall(Vector2i(3, 3)), "wall lookup is not mutated by external changes")
+	test.assert_true(world.is_walkable_pos(GridPos.new(1, 1)))
+	test.assert_true(not world.is_walkable_pos(GridPos.new(0, 1)))
+	
 func test_move_result_represents_outcomes_and_copies_positions(test):
 	var start := GridPos.new(0, 0)
 	var destination := GridPos.new(1, 0)
