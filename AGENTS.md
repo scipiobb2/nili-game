@@ -57,7 +57,7 @@ If you are changing anything under `game/`, also read and follow:
 - Keep domain logic deterministic and testable (per `docs/conventions.md`).
 
 ### Safety / privacy (kid-focused)
-- No accounts, chat, PII collection, or network calls unless explicitly tasked.
+- No chat or accounts unless explicitly tasked. **Telemetry is encouraged** for internal operations and may use stable pseudonymous identifiers (player_id/session_id) per `docs/event_schema.md`. Do not collect **direct PII** or **free-form user text**. Network calls still require explicit task scope.
 
 ### Dependencies
 - Do not add third-party deps or large frameworks unless explicitly asked.
@@ -76,7 +76,7 @@ If you are changing anything under `game/`, also read and follow:
 
 Treat these as P0/P1 issues when reviewing or preparing changes:
 - P0: determinism regressions; crashes; broken tests; broken web export assumptions for committed scope
-- P1: missing/insufficient tests for changed deterministic logic; scope creep beyond task; unsafe logging/PII; modifying generated export output without being asked
+- P1: missing/insufficient tests for changed deterministic logic; scope creep beyond task; unsafe logging/PII; modifying generated export output without being asked; telemetry events not following the schema / logging free-form text / introducing fingerprint identifiers
 
 Codex applies review guidance from the closest `AGENTS.md` file to each changed file. For game code,
 `game/AGENTS.md` adds additional Godot-specific review rules.

@@ -46,6 +46,12 @@ If a folder doesn’t exist yet (e.g., `src/app/`), create it only if the scoped
 
 ---
 
+## Telemetry boundary
+- Telemetry is an adapters-layer side effect. Do not emit telemetry directly from `src/domain/`.
+- Follow `docs/event_schema.md` (stable pseudonymous IDs allowed; no direct PII/free text).
+
+---
+
 ## Export output
 
 - `build/web/` is export output. Do not hand-edit it unless explicitly tasked.

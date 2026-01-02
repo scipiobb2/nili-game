@@ -96,8 +96,8 @@ scope:
           title: "Document minimal event schema and privacy rules"
           owner_role: "security"
           estimate: "XS"
-          rationale: "Keeps future telemetry safe-by-design for kids and aligned to product goals."
-          description: "Add a short doc describing event names/properties we plan to emit later (manual_move, manual_blocked, level_win, level_start, etc.) and explicit 'no PII' rules."
+          rationale: "Establish telemetry-first internal-operations event contract (maximize usefulness) while avoiding direct PII and free-form user text."
+          description: "Add a short doc describing the telemetry event schema we plan to emit later, including the standard event envelope and identifier model (player_id/session_id), plus explicit 'no direct PII / no free-form user text' rules."
           path_impacts:
             - "docs/event_schema.md"
           scenes: []
@@ -105,11 +105,13 @@ scope:
           services: []
           resources: []
           acceptance_criteria:
-            - "Doc lists events + minimal properties and bans PII."
-            - "Doc references planned gameplay loops (manual moves, wins, failures)."
+            - "Doc defines standard envelope fields (player_id/session_id/t_ms/app_version/etc.) and identifier model."
+            - "Doc lists Sprint 1 loop events (manual_move, level_start, level_win, level_fail) with useful properties."
+            - "Doc explicitly bans direct PII and free-form user text; identifiers are allowed for internal operations."
           dod_checklist:
             - "Reviewed by security-minded reviewer"
-            - "No identifiers or free-form user text allowed"
+            - "Identifier model is documented (stable pseudonymous IDs allowed)."
+            - "No direct PII or free-form user text."
           dependencies: []
           ai_agents:
             gameplay_prompt: |
@@ -118,8 +120,7 @@ scope:
             qa_prompt: ""
             build_release_prompt: ""
             security_prompt: |
-              Draft privacy rules for a kid-safe event schema (no PII, no stable identifiers, bounded payload sizes).
-              Include examples of allowed vs disallowed fields.
+              Draft privacy rules for telemetry-first internal operations: stable pseudonymous identifiers allowed; ban direct PII + free-form text; set payload-size and enum allowlists.
             docs_prompt: |
               Draft docs/event_schema.md structure: event name, when emitted, properties, examples, and privacy constraints.
 

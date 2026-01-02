@@ -58,6 +58,7 @@ Each task should include (as applicable):
 - `dependencies`
 - `owner_role` / `estimate`
 - `ai_agents` prompts (optional)
+- telemetry impacts (if applicable): event names touched and whether `docs/event_schema.md` is updated
 
 ## Agent usage (recommended prompt pattern)
 

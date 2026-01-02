@@ -79,6 +79,7 @@ B) Godot‑ic OO design:
 
 C) Production readiness is part of the task:
 - Tests, logging/observability hooks, guardrails, and build/export hygiene aren’t “later” by default.
+- If a task adds user-visible behavior, ensure telemetry impacts are considered: either emit/update events per `docs/event_schema.md` or explicitly note why telemetry is deferred.
 
 D) Quality > speed:
 - Implementation may take time; correctness, clarity, and maintainability matter more than rushing.
@@ -113,6 +114,7 @@ STEP 3 — Design & Plan (Write before code)
   - Resource schemas (if any)
   - Edge cases & failure modes
   - Migration/compat notes (save versioning, scene refs, input map)
+  - Telemetry: events added/changed (names + fields), and whether `docs/event_schema.md` needs updating.
 - If a major decision is needed and not already decided:
   - Provide 2–3 options + tradeoffs + recommended choice
   - Prefer “safe default + can iterate” patterns.

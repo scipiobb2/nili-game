@@ -68,7 +68,7 @@ Recorder queue UI, command execution engine, debugger highlight/step/replay.
 
 Data-driven LevelConfig loader, saves/progression UI.
 
-Telemetry capture implementation (we’ll only document the schema).
+Telemetry capture implementation (we’ll only document the schema + identifier model).
 
 Misalignment callout:
 
@@ -491,7 +491,7 @@ Print/log events in dev builds; document event schema (no telemetry capture yet)
 
 Security/privacy:
 
-No PII; no network calls; event schema doc explicitly bans identifiers
+No direct PII; no free-form user text; no network calls; event schema defines stable pseudonymous identifiers (player_id/session_id) for internal operations.
 
 Docs/runbooks:
 
@@ -568,11 +568,11 @@ Risk notes / fallback:
 
 If deploy pipeline becomes slow, keep PR CI fast and only gate deploy on main.
 
-TASK-001-3 — Document minimal event schema (privacy-safe)
+TASK-001-3 — Document telemetry event schema + identifier model (internal operations)
 
 Owner role: Security (with Docs Agent)
 
-Description: Create a short doc listing event names + properties we intend to emit later (manual_move, blocked, level_win, etc.) and explicit “NO PII” rules.
+Description: Create a short doc listing event names + properties we intend to emit later (manual_move, blocked, level_win, etc.) and explicit “NO direct PII / NO free-form text” rules, plus the identifier model (player_id/session_id) and standard envelope fields.
 
 Implementation notes:
 
@@ -943,7 +943,7 @@ QA Agent (test cases + playtest scripts + regression list)
 
 Build/Release Agent (CI workflows, export presets, artifact strategy)
 
-Security/Privacy Agent (event schema, kid-safe defaults)
+Telemetry/Privacy Agent (event schema, identifiers, no PII/free text)
 
 Docs Agent (conventions, release checklist, ADR templates)
 

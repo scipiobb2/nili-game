@@ -20,6 +20,19 @@ This document keeps Sprint 0 changes discoverable and makes it clear where deter
 - **Pure data in/pure data out**: domain functions take explicit arguments and return new values/structs instead of mutating global state.
 - **Adapters own side effects**: file I/O, signals, input polling, timers, and animations belong in adapters; they call into domain/app services with explicit data.
 
+## Telemetry and observability conventions
+
+- Telemetry emission is a **side effect** and belongs in `game/src/adapters/` (or a dedicated autoload service in adapters).
+- Domain logic (`game/src/domain/`) must remain telemetry-agnostic:
+  - Domain may return rich result structs that contain everything needed to emit telemetry (outcome, positions, reasons).
+  - Do not call OS/time/network APIs from domain.
+- Telemetry must never influence authoritative simulation state:
+  - Failures in telemetry emission must be swallowed or surfaced only as non-gameplay debug logs.
+- Follow `docs/event_schema.md`:
+  - use the standard event envelope (player_id/session_id/t_ms/app_version)
+  - no direct PII, no free-form user text
+  - prefer enums over arbitrary strings
+
 ## Naming conventions
 
 - **Scripts**: kebab or snake style for files is allowed by Godot, but prefer `snake_case.gd` that mirrors the main class (e.g., `movement_service.gd` contains `class_name MovementService`).
