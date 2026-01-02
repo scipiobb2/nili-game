@@ -15,6 +15,10 @@ env:
 permissions:
   contents: write
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   web:
     runs-on: ubuntu-latest
