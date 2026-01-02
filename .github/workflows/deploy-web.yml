@@ -15,6 +15,10 @@ env:
 permissions:
   contents: write
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   web:
     runs-on: ubuntu-latest
@@ -139,10 +143,15 @@ jobs:
             ' "$PROJECT_FILE" >"${PROJECT_FILE}.tmp" && mv "${PROJECT_FILE}.tmp" "$PROJECT_FILE"
           fi
 
+      - name: Prepare artifact folders
+        run: |
+          mkdir -p artifacts/logs artifacts/web_export
+
       - name: Export Web
         run: |
+          set -o pipefail
           godot --headless --verbose --path "${PROJECT_PATH}" \
-                --export-release "${EXPORT_PRESET}"
+                --export-release "${EXPORT_PRESET}" 2>&1 | tee artifacts/logs/export.log
 
       - name: Deploy to gh-pages
         uses: JamesIves/github-pages-deploy-action@v4
@@ -150,3 +159,28 @@ jobs:
           branch: gh-pages
           folder: game/build/web
           clean: true
+        if: success()
+
+      - name: Tar web export for debugging
+        if: always()
+        run: |
+          if [ -d "${EXPORT_DIR}" ] && [ "$(ls -A ${EXPORT_DIR})" ]; then
+            tar -czf artifacts/web_export/web-export.tar.gz -C "${EXPORT_DIR}" .
+          fi
+
+      - name: Upload export logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: export-logs
+          path: artifacts/logs/export.log
+          retention-days: 7
+
+      - name: Upload web export artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-export
+          path: artifacts/web_export/web-export.tar.gz
+          if-no-files-found: ignore
+          retention-days: 7
