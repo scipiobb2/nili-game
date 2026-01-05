@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LevelData" load_steps=2 format=3 uid="uid://demo_level"]
+
+[ext_resource type="Script" path="res://src/adapters/resources/level_data.gd" id="1_nf1mp"]
+
+[resource]
+script = ExtResource("1_nf1mp")
+width = 6
+height = 5
+start = Vector2i(1, 1)
+goal = Vector2i(4, 3)
+walls = [Vector2i(2, 1), Vector2i(2, 2), Vector2i(3, 3)]
+tile_size = 64.0

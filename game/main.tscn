@@ -1,8 +1,5 @@
-[gd_scene format=3 uid="uid://rvt36nsxd01h"]
+[gd_scene load_steps=2 format=3 uid="uid://rvt36nsxd01h"]
 
-[node name="Node2D" type="Node2D"]
+[ext_resource type="PackedScene" path="res://src/adapters/scenes/game_root.tscn" id="1_jtmqy"]
 
-[node name="Label" type="Label" parent="."]
-offset_right = 40.0
-offset_bottom = 23.0
-text = "Hello Momo!!"
+[node name="Main" instance=ExtResource("1_jtmqy")]

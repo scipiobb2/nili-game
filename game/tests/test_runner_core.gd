@@ -74,11 +74,12 @@ class TestResult:
 
 class TestRunner:
 	const UNIT_TEST_DIR := "res://tests/unit"
+	const INTEGRATION_TEST_DIR := "res://tests/integration"
 
 	func run() -> int:
-		var test_paths := _discover_tests_recursive(UNIT_TEST_DIR)
+		var test_paths := _discover_all_tests()
 		if test_paths.is_empty():
-			print("No tests found in %s" % UNIT_TEST_DIR)
+			print("No tests found in %s or %s" % [UNIT_TEST_DIR, INTEGRATION_TEST_DIR])
 			return 0
 
 		var failed_files := []
@@ -126,6 +127,13 @@ class TestRunner:
 				paths.append(full_path)
 		dir.list_dir_end()
 		paths.sort()
+		return paths
+
+	func _discover_all_tests() -> Array:
+		var paths := []
+		for dir_path in [UNIT_TEST_DIR, INTEGRATION_TEST_DIR]:
+			paths.append_array(_discover_tests_recursive(dir_path))
+
 		return paths
 
 	func _run_test_file(path: String) -> TestResult:
