@@ -27,6 +27,14 @@ func add_entry(direction: Vector2i, result: MoveResult) -> void:
 	_trim_to_limit()
 	_render_entries()
 
+func add_goal_entry() -> void:
+	if _log_label == null:
+		return
+
+	_entries.append("goal_reached()")
+	_trim_to_limit()
+	_render_entries()
+
 func clear_entries() -> void:
 	_entries.clear()
 	_render_entries()

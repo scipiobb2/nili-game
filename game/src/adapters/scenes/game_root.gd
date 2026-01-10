@@ -57,6 +57,8 @@ func _on_move_attempted(direction: Vector2i) -> void:
 
 	var result := _manual_play.try_move(direction)
 	_record_action_attempt(direction, result)
+	if result.is_moved() and _manual_play.is_at_goal():
+		_record_goal_reached()
 	_sync_hero_to_state()
 
 func _on_restart_requested() -> void:
@@ -81,3 +83,9 @@ func _record_action_attempt(direction: Vector2i, result: MoveResult) -> void:
 		return
 
 	_action_log.add_entry(direction, result)
+
+func _record_goal_reached() -> void:
+	if _action_log == null:
+		return
+
+	_action_log.add_goal_entry()
