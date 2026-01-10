@@ -9,6 +9,6 @@ class_name LevelData
 @export var tile_size: float = 64.0
 
 func create_world() -> GridWorld:
-  var start_pos := GridPos.new(start.x, start.y)
-  var goal_pos := GridPos.new(goal.x, goal.y)
-  return GridWorld.new(width, height, start_pos, goal_pos, walls)
+	var start_pos := GridPos.new(start.x, start.y)
+	var goal_pos := GridPos.new(goal.x, goal.y)
+	return GridWorld.new(width, height, start_pos, goal_pos, walls)
