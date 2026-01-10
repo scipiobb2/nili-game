@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://gamerootscene"]
+[gd_scene load_steps=7 format=3 uid="uid://gamerootscene"]
 
 [ext_resource type="Script" path="res://src/adapters/scenes/game_root.gd" id="1_uo7jo"]
 [ext_resource type="Script" path="res://src/adapters/input/manual_input_adapter.gd" id="2_3h0ew"]
 [ext_resource type="Script" path="res://src/adapters/view/world_view.gd" id="3_jmoxa"]
 [ext_resource type="Script" path="res://src/adapters/view/hero_view.gd" id="4_t86v0"]
 [ext_resource type="Resource" path="res://src/adapters/resources/demo_level.tres" id="5_v0jya"]
+[ext_resource type="PackedScene" path="res://src/adapters/ui/hud.tscn" id="6_w80op"]
 
 [node name="GameRoot" type="Node2D"]
 script = ExtResource("1_uo7jo")
@@ -18,3 +19,5 @@ script = ExtResource("3_jmoxa")
 
 [node name="HeroView" type="Node2D" parent="WorldView"]
 script = ExtResource("4_t86v0")
+
+[node name="HUD" parent="." instance=ExtResource("6_w80op")]
