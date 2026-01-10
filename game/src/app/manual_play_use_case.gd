@@ -30,3 +30,6 @@ func get_state() -> GameStateDTO:
 
 func get_current_position() -> GridPos:
 	return GridPos.new(_current_position.x, _current_position.y)
+
+func is_at_goal() -> bool:
+	return _world.is_goal(_current_position)
