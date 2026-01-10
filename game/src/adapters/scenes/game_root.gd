@@ -4,10 +4,12 @@ const ManualPlayUseCase := preload("res://src/app/manual_play_use_case.gd")
 const MovementService := preload("res://src/domain/grid/movement_service.gd")
 const GridWorld := preload("res://src/domain/grid/grid_world.gd")
 const LevelData := preload("res://src/adapters/resources/level_data.gd")
+const MoveResult := preload("res://src/domain/grid/move_result.gd")
 
 @onready var _input_adapter: ManualInputAdapter = $ManualInputAdapter
 @onready var _world_view: WorldView = $WorldView
 @onready var _hero_view: HeroView = $WorldView/HeroView
+@onready var _action_log: ActionLog = $HUD/ActionLog
 
 var _manual_play: ManualPlayUseCase
 var _level_config: LevelData
@@ -53,7 +55,8 @@ func _on_move_attempted(direction: Vector2i) -> void:
 	if _manual_play == null:
 		return
 
-	_manual_play.try_move(direction)
+	var result := _manual_play.try_move(direction)
+	_record_action_attempt(direction, result)
 	_sync_hero_to_state()
 
 func _on_restart_requested() -> void:
@@ -61,6 +64,7 @@ func _on_restart_requested() -> void:
 		return
 
 	_manual_play.reset()
+	_action_log.clear_entries()
 	_sync_hero_to_state()
 
 func _sync_hero_to_state() -> void:
@@ -71,3 +75,9 @@ func get_current_grid_position() -> GridPos:
 	if _manual_play == null:
 		return GridPos.new()
 	return _manual_play.get_current_position()
+
+func _record_action_attempt(direction: Vector2i, result: MoveResult) -> void:
+	if _action_log == null:
+		return
+
+	_action_log.add_entry(direction, result)
