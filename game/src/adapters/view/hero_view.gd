@@ -6,8 +6,8 @@ class_name HeroView
 
 var _grid_position := GridPos.new(0, 0)
 
-func set_grid_position(position: GridPos) -> void:
-  _grid_position = GridPos.new(position.x, position.y)
+func set_grid_position(_position: GridPos) -> void:
+  _grid_position = GridPos.new(_position.x, _position.y)
   var local_position := _grid_to_local(_grid_position)
   self.position = local_position
   queue_redraw()

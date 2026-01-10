@@ -1,9 +1,6 @@
 extends Resource
 class_name LevelData
 
-const GridWorld := preload("res://src/domain/grid/grid_world.gd")
-const GridPos := preload("res://src/domain/value_objects.gd")
-
 @export var width: int = 0
 @export var height: int = 0
 @export var start: Vector2i = Vector2i.ZERO

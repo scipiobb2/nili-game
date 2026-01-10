@@ -1,10 +1,5 @@
 extends Node2D
 
-const ManualPlayUseCase := preload("res://src/app/manual_play_use_case.gd")
-const MovementService := preload("res://src/domain/grid/movement_service.gd")
-const GridWorld := preload("res://src/domain/grid/grid_world.gd")
-const LevelData := preload("res://src/adapters/resources/level_data.gd")
-
 @onready var _input_adapter: ManualInputAdapter = $ManualInputAdapter
 @onready var _world_view: WorldView = $WorldView
 @onready var _hero_view: HeroView = $WorldView/HeroView
@@ -64,8 +59,8 @@ func _on_restart_requested() -> void:
 	_sync_hero_to_state()
 
 func _sync_hero_to_state() -> void:
-	var position := _manual_play.get_current_position()
-	_hero_view.set_grid_position(position)
+	var _position := _manual_play.get_current_position()
+	_hero_view.set_grid_position(_position)
 
 func get_current_grid_position() -> GridPos:
 	if _manual_play == null:
