@@ -68,8 +68,8 @@ func _on_restart_requested() -> void:
 	_sync_hero_to_state()
 
 func _sync_hero_to_state() -> void:
-	var position := _manual_play.get_current_position()
-	_hero_view.set_grid_position(position)
+	var _position := _manual_play.get_current_position()
+	_hero_view.set_grid_position(_position)
 
 func get_current_grid_position() -> GridPos:
 	if _manual_play == null:

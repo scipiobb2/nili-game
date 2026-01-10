@@ -5,10 +5,10 @@ signal move_attempted(direction: Vector2i)
 signal restart_requested()
 
 const _ACTION_TO_DIRECTION := {
-  "move_up": Vector2i(0, -1),
-  "move_down": Vector2i(0, 1),
-  "move_left": Vector2i(-1, 0),
-  "move_right": Vector2i(1, 0),
+	"move_up": Vector2i(0, -1),
+	"move_down": Vector2i(0, 1),
+	"move_left": Vector2i(-1, 0),
+	"move_right": Vector2i(1, 0),
 }
 
 func _unhandled_input(event: InputEvent):

@@ -5,6 +5,10 @@ on:
   push:
     branches: [ main ]
 
+defaults:
+  run:
+    shell: bash
+    
 env:
   GODOT_VERSION: 4.5.1
   PROJECT_PATH: game
@@ -19,6 +23,22 @@ jobs:
         uses: actions/checkout@v4
         with:
           lfs: true
+
+      - name: Enforce GDScript tabs-only indentation
+        run: |
+          set -euo pipefail
+          # Match any NON-empty line whose leading indentation contains at least one space.
+          # (Tabs are allowed; spaces in the indentation prefix are not.)
+          pattern=$'^[\t ]* [\t ]*[^ \t]'
+          offenders=$(grep -nR --include='*.gd' --include='*.gdshader' -E "$pattern" "${PROJECT_PATH}" || true)
+          if [ -n "$offenders" ]; then
+            echo "ERROR: Found space characters in leading indentation in GDScript. Use tabs only."
+            echo
+            echo "$offenders"
+            echo
+            echo "Fix: convert indentation to tabs in Godot (Edit -> Convert Indent to Tabs) or your editor."
+            exit 1
+          fi
 
       # Use clean Godot user dirs to avoid cached state impacting tests.
       - name: Use clean Godot user dirs

@@ -164,6 +164,9 @@ Code quality:
 - Document “why” (brief comments), not “what” (obvious code).
 - Keep public APIs stable; prefer adding new methods over breaking old ones (unless sprint plan says otherwise).
 
+Formatting / whitespace (Godot):
+- GDScript tabs-only; enforced by game/.editorconfig + CI.
+
 Godot patterns:
 - Signals for events; minimize direct cross-node references.
 - Resources for configs/data; scenes for composition.

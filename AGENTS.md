@@ -62,6 +62,10 @@ If you are changing anything under `game/`, also read and follow:
 ### Dependencies
 - Do not add third-party deps or large frameworks unless explicitly asked.
 
+### GDScript indentation
+- For `*.gd` / `*.gdshader`: tabs-only indentation. No leading spaces.
+- This is enforced by `game/.editorconfig` and CI. Do not reformat whitespace unless explicitly asked.
+
 ---
 
 ## Generated / third-party content
