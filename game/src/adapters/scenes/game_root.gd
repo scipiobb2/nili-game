@@ -57,11 +57,13 @@ func _on_move_attempted(direction: Vector2i) -> void:
 
 	var result := _manual_play.try_move(direction)
 	_record_action_attempt(direction, result)
+	
 	if result.is_blocked():
 		_hero_view.play_bonk(direction)
-	if result.is_moved() and _manual_play.is_at_goal():
-		_record_goal_reached()
-	_sync_hero_to_state()
+	elif result.is_moved():
+		if _manual_play.is_at_goal():
+			_record_goal_reached()
+		_sync_hero_to_state()
 
 func _on_restart_requested() -> void:
 	if _manual_play == null:
