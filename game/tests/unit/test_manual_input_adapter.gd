@@ -1,11 +1,11 @@
 extends RefCounted
 
 const _ACTION_KEYCODES := {
-  "move_up": [Key.KEY_UP, Key.KEY_W],
-  "move_down": [Key.KEY_DOWN, Key.KEY_S],
-  "move_left": [Key.KEY_LEFT, Key.KEY_A],
-  "move_right": [Key.KEY_RIGHT, Key.KEY_D],
-  "restart": [Key.KEY_R],
+	"move_up": [Key.KEY_UP, Key.KEY_W],
+	"move_down": [Key.KEY_DOWN, Key.KEY_S],
+	"move_left": [Key.KEY_LEFT, Key.KEY_A],
+	"move_right": [Key.KEY_RIGHT, Key.KEY_D],
+	"restart": [Key.KEY_R],
 }
 
 func _ensure_project_input_map():
