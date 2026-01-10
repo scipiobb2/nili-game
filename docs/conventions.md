@@ -40,6 +40,10 @@ This document keeps Sprint 0 changes discoverable and makes it clear where deter
 - **Tests**: `test_<topic>.gd` files placed under `game/tests/unit/` (subfolders allowed). Each test script can expose multiple `test_*` methods; optional `_before()`/`_after()` hooks run around every test method.
 - **Scenes**: place scene files under `game/src/adapters/` (or deeper feature folders) and keep script side effects confined to that layer.
 
+## Formatting & whitespace
+
+- GDScript tabs-only; enforced by game/.editorconfig + CI.
+
 ## Adding a new deterministic module (example walk-through)
 
 1. Create the script under `game/src/domain/<feature>/` (e.g., `game/src/domain/grid/movement_service.gd`). Keep it free of Node APIs.

@@ -32,6 +32,13 @@ If a folder doesn’t exist yet (e.g., `src/app/`), create it only if the scoped
 
 ## Godot-specific guardrails
 
+### GDScript indentation (tabs only)
+- Indentation in GDScript (`*.gd`, `*.gdshader`) must be **tabs** (not spaces).
+- Never mix tabs and spaces for leading indentation in a GDScript file.
+- Avoid whitespace-only reformatting (especially indentation).
+- Quick self-check after editing scripts (must return no matches):
+  - `grep -nP '^( +)\S' -r . --include='*.gd'`
+
 ### Determinism boundary
 - Keep authoritative simulation state in deterministic logic.
 - Visual feedback (tweens, animations, shakes) must not change authoritative state.
