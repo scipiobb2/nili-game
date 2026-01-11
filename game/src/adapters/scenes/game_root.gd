@@ -10,9 +10,11 @@ const MoveResult := preload("res://src/domain/grid/move_result.gd")
 @onready var _world_view: WorldView = $WorldView
 @onready var _hero_view: HeroView = $WorldView/HeroView
 @onready var _action_log: ActionLog = $HUD/ActionLog
+@onready var _win_overlay: WinOverlay = $HUD/WinOverlay
 
 var _manual_play: ManualPlayUseCase
 var _level_config: LevelData
+var _has_won := false
 
 @export var level_data: LevelData
 
@@ -26,6 +28,9 @@ func _ready() -> void:
 func _connect_input() -> void:
 	_input_adapter.move_attempted.connect(_on_move_attempted)
 	_input_adapter.restart_requested.connect(_on_restart_requested)
+	if _win_overlay != null:
+		_win_overlay.replay_pressed.connect(_on_replay_requested)
+		_win_overlay.next_pressed.connect(_on_next_requested)
 
 func _initialize_world() -> void:
 	_level_config = _load_level_data()
@@ -54,6 +59,8 @@ func _load_level_data() -> LevelData:
 func _on_move_attempted(direction: Vector2i) -> void:
 	if _manual_play == null:
 		return
+	if _has_won:
+		return
 
 	var result := _manual_play.try_move(direction)
 	_record_action_attempt(direction, result)
@@ -63,12 +70,23 @@ func _on_move_attempted(direction: Vector2i) -> void:
 	elif result.is_moved():
 		if _manual_play.is_at_goal():
 			_record_goal_reached()
+			_show_win_overlay()
 		_sync_hero_to_state()
 
 func _on_restart_requested() -> void:
+	_reset_run()
+
+func _on_replay_requested() -> void:
+	_reset_run()
+
+func _on_next_requested() -> void:
+	_reset_run()
+
+func _reset_run() -> void:
 	if _manual_play == null:
 		return
 
+	_hide_win_overlay()
 	_manual_play.reset()
 	_action_log.clear_entries()
 	_sync_hero_to_state()
@@ -93,3 +111,15 @@ func _record_goal_reached() -> void:
 		return
 
 	_action_log.add_goal_entry()
+
+func _show_win_overlay() -> void:
+	if _win_overlay == null:
+		return
+
+	_has_won = true
+	_win_overlay.show_overlay()
+
+func _hide_win_overlay() -> void:
+	_has_won = false
+	if _win_overlay != null:
+		_win_overlay.hide_overlay()
