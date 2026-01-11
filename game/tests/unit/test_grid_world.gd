@@ -24,6 +24,14 @@ func test_grid_world_tracks_bounds_and_walls(test):
 	test.assert_true(not world.is_wall(Vector2i(3, 3)), "wall lookup is not mutated by external changes")
 	test.assert_true(world.is_walkable_pos(GridPos.new(1, 1)))
 	test.assert_true(not world.is_walkable_pos(GridPos.new(0, 1)))
+
+func test_goal_detection_matches_only_goal_tile(test):
+	var start := GridPos.new(0, 0)
+	var goal := GridPos.new(2, 1)
+	var world := GridWorld.new(4, 3, start, goal, [])
+
+	test.assert_true(world.is_goal(GridPos.new(2, 1)), "goal detection matches the configured goal tile")
+	test.assert_true(not world.is_goal(GridPos.new(1, 1)), "non-goal tiles should not register as goal")
 	
 func test_move_result_represents_outcomes_and_copies_positions(test):
 	var start := GridPos.new(0, 0)
