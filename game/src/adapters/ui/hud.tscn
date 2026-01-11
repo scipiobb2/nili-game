@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://hudscene"]
+[gd_scene load_steps=3 format=3 uid="uid://hudscene"]
 
 [ext_resource type="Script" path="res://src/adapters/ui/action_log.gd" id="1_ilcbr"]
+[ext_resource type="PackedScene" path="res://src/adapters/ui/win_overlay.tscn" id="2_84gwt"]
 
 [node name="HUD" type="CanvasLayer"]
 
@@ -59,3 +60,5 @@ fit_content = true
 scroll_active = false
 scroll_following = true
 autowrap_mode = 3
+
+[node name="WinOverlay" parent="." instance=ExtResource("2_84gwt")]
