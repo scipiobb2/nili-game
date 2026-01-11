@@ -76,7 +76,6 @@ func test_try_move_table_driven_cases(test):
 		},
 	]
 
-	var service := MovementService.new()
 	for case in cases:
 		_assert_move_outcome(
 			test,
