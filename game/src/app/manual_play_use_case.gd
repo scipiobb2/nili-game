@@ -5,6 +5,7 @@ var _world: GridWorld
 var _movement_service: MovementService
 var _initial_position: GridPos
 var _current_position: GridPos
+var _initial_state: GameStateDTO
 
 func _init(world: GridWorld, movement_service: MovementService, start_position: GridPos = null):
 	assert(world != null, "ManualPlayUseCase requires a world")
@@ -13,6 +14,7 @@ func _init(world: GridWorld, movement_service: MovementService, start_position: 
 	_movement_service = movement_service
 	_initial_position = start_position if start_position != null else GridPos.new(world.start.x, world.start.y)
 	_current_position = GridPos.new(_initial_position.x, _initial_position.y)
+	_initial_state = GameStateDTO.new(_world, _initial_position, _current_position)
 
 	assert(_world.is_within_bounds(Vector2i(_initial_position.x, _initial_position.y)), "Start position must be within world bounds")
 
@@ -23,7 +25,7 @@ func try_move(direction: Vector2i) -> MoveResult:
 	return result
 
 func reset():
-	_current_position = GridPos.new(_initial_position.x, _initial_position.y)
+	_current_position = GridPos.new(_initial_state.current_position.x, _initial_state.current_position.y)
 
 func get_state() -> GameStateDTO:
 	return GameStateDTO.new(_world, _initial_position, _current_position)
