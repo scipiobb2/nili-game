@@ -1,554 +1,162 @@
 sprint:
+  number: 1
   name: "Sprint 0+1 — Foundation + Manual Toy Loop"
-  start_date: ""
-  end_date: ""
+  status: "Closed"
+  closed_date: "2026-01-25"
   goal: "Ship a deterministic, web-deployable toy loop (move/bonk/win/restart) gated by CI headless tests and a release checklist."
-  assumptions:
-    - "Primary platform is desktop Web (Chromium/Chromebooks); desktop export is secondary."
-    - "No touch-first UX in this sprint."
-    - "Placeholder visuals/audio are acceptable; determinism and clarity are the priority."
-    - "We will not implement Recorder/Executor/Debugger/LevelConfig/Saves in this sprint."
-    - "Repo already contains a headless test runner; CI will be updated to run it."
-  capacity:
-    unit: "days"
-    by_role:
-      gameplay: 16
-      ui_tools: 8
-      qa: 5
-      build_release: 3
-      design: 0
-      art_tech: 0
-      audio: 0
-      security: 1
-    planned_buffer_pct: 25
 
 scope:
   committed_stories:
     - story_id: "STORY-001"
       title: "Establish engineering foundation for deterministic gameplay"
-      priority: "P0"
-      risk: "Med"
-      dependencies: []
-      deliverable: "PR CI runs headless tests; deploy workflow gates export on tests; minimal event schema doc added."
       tasks:
         - task_id: "TASK-001-1"
           title: "Add PR CI workflow to run headless unit tests"
-          owner_role: "build_release"
-          estimate: "S"
-          rationale: "Ensures deterministic domain logic is protected by automation on every PR."
-          description: "Create GitHub Actions workflow triggered on pull_request (and optionally push) that runs Godot headless tests via res://tests/run_tests.gd and surfaces pass/fail clearly."
-          path_impacts:
+          status: "Done"
+          implemented_in:
             - ".github/workflows/ci.yml"
-          scenes: []
-          entities: []
-          services: []
-          resources: []
-          acceptance_criteria:
-            - "Workflow runs on PR and reports pass/fail."
-            - "Failing tests print readable [FAIL] output and exit non-zero."
-          dod_checklist:
-            - "PR reviewed"
-            - "CI output readable and stable"
-          dependencies: []
-          ai_agents:
-            gameplay_prompt: |
-              Review the existing headless test runner and suggest any changes needed to keep domain tests deterministic and fast.
-              Output: recommendations + edge cases (e.g., floating approx, Vector comparisons).
-            ui_prompt: ""
-            qa_prompt: |
-              Propose a minimal CI verification checklist: how to tell a test failure vs runner crash; include triage steps.
-            build_release_prompt: |
-              Draft a GitHub Actions workflow (YAML) to run Godot headless tests using barichello/godot-ci.
-              Include caching/XDG considerations and clear failure logs.
-            security_prompt: ""
-            docs_prompt: ""
 
         - task_id: "TASK-001-2"
           title: "Gate web deploy workflow on headless tests"
-          owner_role: "build_release"
-          estimate: "XS"
-          rationale: "Prevents broken deterministic logic from being deployed."
-          description: "Add a 'Run headless tests' step to the existing deploy-web workflow before export/deploy."
-          path_impacts:
+          status: "Done"
+          implemented_in:
             - ".github/workflows/deploy-web.yml"
-          scenes: []
-          entities: []
-          services: []
-          resources: []
-          acceptance_criteria:
-            - "If tests fail, export/deploy steps are not executed."
-          dod_checklist:
-            - "CI green on main"
-            - "Failure prevents deploy"
-          dependencies:
-            - "TASK-001-1"
-          ai_agents:
-            gameplay_prompt: ""
-            ui_prompt: ""
-            qa_prompt: ""
-            build_release_prompt: |
-              Update the deploy-web workflow to run `godot --headless --path game -s res://tests/run_tests.gd` before export.
-              Ensure logs remain visible in GitHub Actions output.
-            security_prompt: ""
-            docs_prompt: ""
 
         - task_id: "TASK-001-3"
           title: "Document minimal event schema and privacy rules"
-          owner_role: "security"
-          estimate: "XS"
-          rationale: "Establish telemetry-first internal-operations event contract (maximize usefulness) while avoiding direct PII and free-form user text."
-          description: "Add a short doc describing the telemetry event schema we plan to emit later, including the standard event envelope and identifier model (player_id/session_id), plus explicit 'no direct PII / no free-form user text' rules."
-          path_impacts:
+          status: "Done"
+          implemented_in:
             - "docs/event_schema.md"
-          scenes: []
-          entities: []
-          services: []
-          resources: []
-          acceptance_criteria:
-            - "Doc defines standard envelope fields (player_id/session_id/t_ms/app_version/etc.) and identifier model."
-            - "Doc lists Sprint 1 loop events (manual_move, level_start, level_win, level_fail) with useful properties."
-            - "Doc explicitly bans direct PII and free-form user text; identifiers are allowed for internal operations."
-          dod_checklist:
-            - "Reviewed by security-minded reviewer"
-            - "Identifier model is documented (stable pseudonymous IDs allowed)."
-            - "No direct PII or free-form user text."
-          dependencies: []
-          ai_agents:
-            gameplay_prompt: |
-              Provide the minimum set of gameplay events required to compute: time-to-first-win, level completion rate, and manual blocked frequency (no PII).
-            ui_prompt: ""
-            qa_prompt: ""
-            build_release_prompt: ""
-            security_prompt: |
-              Draft privacy rules for telemetry-first internal operations: stable pseudonymous identifiers allowed; ban direct PII + free-form text; set payload-size and enum allowlists.
-            docs_prompt: |
-              Draft docs/event_schema.md structure: event name, when emitted, properties, examples, and privacy constraints.
 
     - story_id: "STORY-015"
       title: "Harden web export deployment workflow and define release checklist"
-      priority: "P0"
-      risk: "Med"
-      dependencies:
-        - "STORY-001"
-      deliverable: "Release checklist exists; CI exports are easier to debug via logs/artifacts; hosting assumptions documented."
       tasks:
         - task_id: "TASK-015-1"
           title: "Create web release checklist + smoke test steps"
-          owner_role: "build_release"
-          estimate: "XS"
-          rationale: "Makes releases repeatable and reduces tribal knowledge."
-          description: "Add docs/release_checklist.md covering versioning, CI expectations, smoke test steps (load → move → bonk → win → restart), and rollback notes."
-          path_impacts:
+          status: "Done"
+          implemented_in:
+            - "docs/release_process.md"
             - "docs/release_checklist.md"
-          scenes: []
-          entities: []
-          services: []
-          resources: []
-          acceptance_criteria:
-            - "Checklist includes a deterministic gameplay smoke test."
-            - "Checklist includes rollback guidance for gh-pages deployment."
-          dod_checklist:
-            - "Reviewed by QA and Build/Release"
-          dependencies: []
-          ai_agents:
-            gameplay_prompt: ""
-            ui_prompt: ""
-            qa_prompt: |
-              Draft a concise web smoke test checklist specifically for the manual toy loop (controls, blocked feedback, win, restart).
-            build_release_prompt: |
-              Draft a release checklist for GitHub Pages deployment from a Godot Web export (include versioning and rollback).
-            security_prompt: |
-              Review checklist for any privacy/security pitfalls (headers, cross-origin isolation, logs containing paths).
-            docs_prompt: |
-              Write docs/release_checklist.md in a format that can be followed by a new contributor.
 
         - task_id: "TASK-015-2"
           title: "Upload export artifacts/logs from CI for failure diagnosis"
-          owner_role: "build_release"
-          estimate: "S"
-          rationale: "Export failures are common early; artifacts shorten debug loop dramatically."
-          description: "Enhance deploy-web workflow to preserve key logs and upload the exported web folder (or key files) as a CI artifact, especially on failure."
-          path_impacts:
+          status: "Done"
+          implemented_in:
             - ".github/workflows/deploy-web.yml"
-          scenes: []
-          entities: []
-          services: []
-          resources: []
-          acceptance_criteria:
-            - "On export failure, CI run provides enough logs/artifacts to diagnose without rerunning locally."
-          dod_checklist:
-            - "Artifact upload verified on a test run"
-          dependencies:
-            - "TASK-001-2"
-          ai_agents:
-            gameplay_prompt: ""
-            ui_prompt: ""
-            qa_prompt: ""
-            build_release_prompt: |
-              Update GitHub Actions to upload `game/build/web` as an artifact (or key files) and ensure verbose export logs are preserved.
-              Recommend artifact size safeguards.
-            security_prompt: ""
-            docs_prompt: ""
 
     - story_id: "STORY-002"
       title: "Implement deterministic grid representation and collision rules"
-      priority: "P0"
-      risk: "Med"
-      dependencies:
-        - "STORY-001"
-      deliverable: "Pure domain movement/collision rules with unit tests; blocked outcome accessible to adapters."
       tasks:
         - task_id: "TASK-002-1"
           title: "Create ADR for grid coordinate conventions and input directions"
-          owner_role: "gameplay"
-          estimate: "XS"
-          rationale: "Locks down assumptions early to prevent mapping bugs and rewrite churn."
-          description: "Document origin, axis directions, and mapping of move actions to Vector2i offsets. Reference this in tests and adapters."
-          path_impacts:
+          status: "Done"
+          implemented_in:
             - "docs/adr/ADR-001-grid-coordinates.md"
-          scenes: []
-          entities: []
-          services: []
-          resources: []
-          acceptance_criteria:
-            - "ADR states one convention unambiguously and includes examples."
-          dod_checklist:
-            - "Reviewed by UI/Tools and QA"
-          dependencies: []
-          ai_agents:
-            gameplay_prompt: |
-              Propose a clear grid coordinate convention for a kid-friendly 2D maze in Godot.
-              Include examples for move_up/down/left/right mapping.
-            ui_prompt: ""
-            qa_prompt: ""
-            build_release_prompt: ""
-            security_prompt: ""
-            docs_prompt: |
-              Draft a short ADR template and fill ADR-001 with the chosen grid conventions + examples.
 
         - task_id: "TASK-002-2"
           title: "Implement domain GridWorld + MoveResult data types"
-          owner_role: "gameplay"
-          estimate: "S"
-          rationale: "Provides the minimal, testable model for walls/floors/goal and outcomes."
-          description: "Create pure data structures for grid bounds, wall set, goal position, and move outcomes/reasons."
-          path_impacts:
+          status: "Done"
+          implemented_in:
             - "game/src/domain/grid/grid_world.gd"
             - "game/src/domain/grid/move_result.gd"
-          scenes: []
-          entities: []
-          services: []
-          resources: []
-          acceptance_criteria:
-            - "Can represent a small maze with walls/start/goal using plain data."
-            - "MoveResult expresses moved vs blocked outcomes."
-          dod_checklist:
-            - "No Node/SceneTree/Input usage"
-            - "Typed fields for clarity"
-          dependencies:
-            - "TASK-002-1"
-          ai_agents:
-            gameplay_prompt: |
-              Design minimal domain types for GridWorld and MoveResult that stay pure (RefCounted OK, no Node APIs).
-              Output: class outlines + fields + invariants.
-            ui_prompt: ""
-            qa_prompt: ""
-            build_release_prompt: ""
-            security_prompt: ""
-            docs_prompt: ""
+            - "game/tests/unit/test_grid_world.gd"
 
         - task_id: "TASK-002-3"
           title: "Implement deterministic MovementService for collisions"
-          owner_role: "gameplay"
-          estimate: "M"
-          rationale: "Core gameplay correctness; needs tests and careful edge cases."
-          description: "Implement movement attempt: open tile moves exactly one step; walls block with no position change; optionally handle out-of-bounds explicitly."
-          path_impacts:
+          status: "Done"
+          implemented_in:
             - "game/src/domain/grid/movement_service.gd"
-          scenes: []
-          entities: []
-          services: []
-          resources: []
-          acceptance_criteria:
-            - "Attempting to move into a wall returns blocked and keeps position unchanged."
-            - "Moving into open tile updates position to adjacent tile exactly."
-          dod_checklist:
-            - "Unit tests added"
-            - "No randomness/time dependency"
-          dependencies:
-            - "TASK-002-2"
-          ai_agents:
-            gameplay_prompt: |
-              Propose MovementService.try_move(world, pos, dir) -> MoveResult API and enumerate edge cases (wall, bounds).
-              Include test cases list.
-            ui_prompt: ""
-            qa_prompt: |
-              Suggest additional negative tests: null inputs, malformed world, out-of-bounds behavior.
-            build_release_prompt: ""
-            security_prompt: ""
-            docs_prompt: ""
+            - "game/tests/unit/test_movement_service.gd"
 
         - task_id: "TASK-002-4"
           title: "Add unit tests for movement/collision determinism"
-          owner_role: "qa"
-          estimate: "S"
-          rationale: "Determinism must be guarded immediately."
-          description: "Add unit tests covering open move, blocked move, and repeated move attempts producing identical outcomes."
-          path_impacts:
+          status: "Done"
+          implemented_in:
             - "game/tests/unit/test_movement_service.gd"
-          scenes: []
-          entities: []
-          services: []
-          resources: []
-          acceptance_criteria:
-            - "Tests pass headlessly and fail deterministically when logic changes."
-          dod_checklist:
-            - "Table-driven cases"
-          dependencies:
-            - "TASK-002-3"
-          ai_agents:
-            gameplay_prompt: ""
-            ui_prompt: ""
-            qa_prompt: |
-              Draft table-driven unit tests for MovementService: open tile, wall blocked, repeated attempt stable results.
-              Keep tests purely logic-based.
-            build_release_prompt: ""
-            security_prompt: ""
-            docs_prompt: ""
 
         - task_id: "TASK-002-5"
           title: "Add ManualPlayUseCase to expose move outcomes to adapters"
-          owner_role: "gameplay"
-          estimate: "S"
-          rationale: "Keeps adapters thin and centralizes reset semantics."
-          description: "Implement app-layer use case that owns current WorldState, calls MovementService, returns MoveResult, and supports reset to initial state."
-          path_impacts:
+          status: "Done"
+          implemented_in:
             - "game/src/app/manual_play_use_case.gd"
-          scenes: []
-          entities: []
-          services: []
-          resources: []
-          acceptance_criteria:
-            - "Adapters can call try_move and receive blocked/moved outcomes without duplicating rules."
-            - "Reset returns to deterministic initial state."
-          dod_checklist:
-            - "No Node usage"
-            - "State reset tested or trivially verifiable"
-          dependencies:
-            - "TASK-002-3"
-          ai_agents:
-            gameplay_prompt: |
-              Propose a thin ManualPlayUseCase interface: init(world, start_pos), try_move(dir), reset(), get_state().
-              Include how adapters should consume results.
-            ui_prompt: ""
-            qa_prompt: ""
-            build_release_prompt: ""
-            security_prompt: ""
-            docs_prompt: ""
+            - "game/tests/unit/test_manual_play_use_case.gd"
 
     - story_id: "STORY-003"
       title: "Deliver Manual Mode movement with an action log"
-      priority: "P0"
-      risk: "Low"
-      dependencies:
-        - "STORY-002"
-      deliverable: "In web build, arrow keys move immediately (if possible), blocked moves bonk, and action log shows attempted actions."
       tasks:
         - task_id: "TASK-003-1"
           title: "Configure InputMap actions and manual input adapter"
-          owner_role: "ui_tools"
-          estimate: "S"
-          rationale: "Input must work reliably in browser and editor."
-          description: "Define move_up/down/left/right (and optional WASD) and restart action; implement a manual input adapter that translates them to direction vectors."
-          path_impacts:
+          status: "Done"
+          implemented_in:
             - "game/project.godot"
             - "game/src/adapters/input/manual_input_adapter.gd"
-          scenes: []
-          entities: []
-          services: []
-          resources: []
-          acceptance_criteria:
-            - "Arrow keys trigger one deterministic move attempt per press."
-          dod_checklist:
-            - "Works in editor and web export"
-          dependencies:
-            - "TASK-002-5"
-          ai_agents:
-            gameplay_prompt: ""
-            ui_prompt: |
-              Propose a simple Godot input adapter pattern that avoids polling everywhere and keeps mapping centralized.
-            qa_prompt: ""
-            build_release_prompt: ""
-            security_prompt: ""
-            docs_prompt: ""
+            - "game/tests/unit/test_input_configuration.gd"
+            - "game/tests/unit/test_manual_input_adapter.gd"
 
         - task_id: "TASK-003-2"
           title: "Create GameRoot scene with WorldView and HeroView bound to domain state"
-          owner_role: "ui_tools"
-          estimate: "M"
-          rationale: "Primary playable artifact; some iteration expected on layout/render."
-          description: "Create the main playable scene: render a small maze, show hero, update hero position from GridPos after each move attempt."
-          path_impacts:
+          status: "Done"
+          implemented_in:
             - "game/main.tscn"
             - "game/src/adapters/scenes/game_root.tscn"
             - "game/src/adapters/scenes/game_root.gd"
             - "game/src/adapters/view/world_view.gd"
             - "game/src/adapters/view/hero_view.gd"
-          scenes:
-            - "res://main.tscn"
-            - "res://src/adapters/scenes/game_root.tscn"
-          entities:
-            - "HeroView"
-            - "WorldView"
-          services: []
-          resources: []
-          acceptance_criteria:
-            - "Hero moves exactly one tile per successful input."
-            - "Blocked move does not change hero tile position."
-          dod_checklist:
-            - "No physics movement for logic"
-            - "Scene nodes named clearly"
-          dependencies:
-            - "TASK-003-1"
-          ai_agents:
-            gameplay_prompt: |
-              Provide guidance on binding domain GridPos state to view position without introducing nondeterminism (simulation authoritative; visuals follow).
-            ui_prompt: |
-              Propose a minimal scene tree for GameRoot (WorldView + HeroView + HUD) that minimizes merge conflicts.
-            qa_prompt: ""
-            build_release_prompt: ""
-            security_prompt: ""
-            docs_prompt: ""
+            - "game/tests/integration/test_game_root_scene.gd"
 
         - task_id: "TASK-003-3"
           title: "Implement Action Log UI component"
-          owner_role: "ui_tools"
-          estimate: "S"
-          rationale: "Critical learning feedback; helps kids form 'API' vocabulary."
-          description: "Create HUD action log that appends entries like move_left() for every attempt including blocked moves. Cap to last N entries."
-          path_impacts:
+          status: "Done"
+          implemented_in:
             - "game/src/adapters/ui/hud.tscn"
             - "game/src/adapters/ui/action_log.gd"
-          scenes:
-            - "res://src/adapters/ui/hud.tscn"
-          entities: []
-          services: []
-          resources: []
-          acceptance_criteria:
-            - "Log updates on every move attempt and remains readable."
-          dod_checklist:
-            - "Readable font size"
-            - "Does not grow unbounded"
-          dependencies:
-            - "TASK-003-2"
-          ai_agents:
-            gameplay_prompt: ""
-            ui_prompt: |
-              Propose a kid-readable action log layout (big text, minimal clutter).
-              Include behavior for max lines and spacing.
-            qa_prompt: |
-              Draft UI verification steps: log updates for move and blocked, no overflow, readable in web canvas.
-            build_release_prompt: ""
-            security_prompt: ""
-            docs_prompt: ""
 
         - task_id: "TASK-003-4"
-          title: "Add playful bonk feedback on blocked move (non-audio baseline)"
-          owner_role: "ui_tools"
-          estimate: "S"
-          rationale: "Addresses 'blocked' clarity and fun without requiring audio pipeline yet."
-          description: "On blocked outcome, trigger a small visual feedback (shake/bump) and ensure it doesn't affect simulation state."
-          path_impacts:
-            - "game/src/adapters/scenes/game_root.gd"
+          title: "Add playful bonk feedback on blocked move"
+          status: "Done"
+          implemented_in:
             - "game/src/adapters/view/hero_view.gd"
-          scenes: []
-          entities: []
-          services: []
-          resources: []
-          acceptance_criteria:
-            - "Blocked move shows distinct feedback and logs attempted action."
-          dod_checklist:
-            - "Feedback does not change grid state"
-          dependencies:
-            - "TASK-003-3"
-          ai_agents:
-            gameplay_prompt: |
-              Identify safe ways to add feedback that cannot affect deterministic state (view-only tween/shake).
-            ui_prompt: |
-              Propose a subtle bonk animation/shake that is short and not motion-heavy.
-            qa_prompt: ""
-            build_release_prompt: ""
-            security_prompt: ""
-            docs_prompt: ""
+            - "game/src/adapters/scenes/game_root.gd"
 
-  stretch_stories: []
+    # NOTE: STORY-004 shipped in code but was missing from the original sprint_1_tasks.yaml.
+    # Added here during closeout to keep doc↔code alignment.
+    - story_id: "STORY-004"
+      title: "Add goal tile, win screen, and quick restart"
+      tasks:
+        - task_id: "TASK-004-1"
+          title: "Implement goal detection in domain + unit test"
+          status: "Done"
+          implemented_in:
+            - "game/src/domain/grid/grid_world.gd"
+            - "game/src/app/manual_play_use_case.gd"
+            - "game/tests/unit/test_grid_world.gd"
+
+        - task_id: "TASK-004-2"
+          title: "Add win overlay UI with replay/restart"
+          status: "Done"
+          implemented_in:
+            - "game/src/adapters/ui/win_overlay.tscn"
+            - "game/src/adapters/ui/win_overlay.gd"
+            - "game/src/adapters/scenes/game_root.gd"
+
+        - task_id: "TASK-004-3"
+          title: "Deterministic restart/reset"
+          status: "Done"
+          implemented_in:
+            - "game/src/app/manual_play_use_case.gd"
+            - "game/src/adapters/scenes/game_root.gd"
+            - "game/tests/unit/test_manual_play_use_case.gd"
+
+        - task_id: "TASK-004-4"
+          title: "QA web smoke playtest + regression checklist"
+          status: "Deferred"
+          notes:
+            - "No playtest notes/checklist were committed to the repo."
+            - "Use the smoke test steps in docs/release_process.md and capture evidence next sprint."
+            - "Tracked in docs/sprints/backlog.md for future sprint planning."
 
 decisions:
   - id: "ADR-001"
-    decision: "Grid coordinate convention (origin + axes) and direction mapping for manual input"
-    options:
-      - "Origin top-left; +x right; +y down (screen-space)"
-      - "Origin bottom-left; +x right; +y up (math-space)"
-    recommendation: "Use screen-space (top-left, y-down) to match intuitive 2D layout and reduce mapping bugs."
-    owner_role: "gameplay"
-    due_by_day: 2
-
-  - id: "ADR-002"
-    decision: "World rendering approach for Sprint 1"
-    options:
-      - "Node2D custom draw (rects) + simple hero sprite"
-      - "TileMap + TileSet from day one"
-    recommendation: "Use custom draw for speed and minimal asset/tooling churn; revisit TileMap when LevelConfig arrives."
-    owner_role: "ui_tools"
-    due_by_day: 3
-
-  - id: "ADR-003"
-    decision: "CI gating strategy"
-    options:
-      - "Only gate deploy workflow with tests"
-      - "Add PR CI workflow + gate deploy workflow"
-    recommendation: "Do both: PR CI for fast feedback and deploy gating for safety."
-    owner_role: "build_release"
-    due_by_day: 2
-
-risks:
-  - id: "RISK-001"
-    risk: "Godot headless CI instability causes flaky tests/exports"
-    likelihood: "Med"
-    impact: "High"
-    early_signal: "Intermittent CI failures without code changes"
-    mitigation: "Use clean XDG dirs; keep tests pure; upload logs/artifacts for diagnosis"
-    owner_role: "build_release"
-
-  - id: "RISK-002"
-    risk: "Grid coordinate mismatch between domain and view causes confusing movement"
-    likelihood: "Med"
-    impact: "High"
-    early_signal: "Moves appear mirrored/rotated or collide incorrectly"
-    mitigation: "ADR-001 + unit tests + simple debug grid labels"
-    owner_role: "gameplay"
-
-  - id: "RISK-003"
-    risk: "Accidental reliance on physics/time breaks determinism"
-    likelihood: "Low"
-    impact: "High"
-    early_signal: "Same input sequence yields different outcomes"
-    mitigation: "Domain-authoritative state; visuals follow state; test movement outcomes"
-    owner_role: "gameplay"
-
-  - id: "RISK-004"
-    risk: "Browser input focus issues make controls feel broken"
-    likelihood: "Med"
-    impact: "Med"
-    early_signal: "Arrow keys work in editor but not web build"
-    mitigation: "Ensure canvas focus-on-start; add small UI hint if unfocused"
-    owner_role: "ui_tools"
-
-  - id: "RISK-005"
-    risk: "Scene merge conflicts slow integration"
-    likelihood: "Med"
-    impact: "Med"
-    early_signal: "Frequent .tscn conflicts"
-    mitigation: "Scene ownership + compose smaller scenes (HUD separate from world)"
-    owner_role: "ui_tools"
-
+    title: "Grid coordinate conventions and move directions"
+    status: "Accepted"
+    reference: "docs/adr/ADR-001-grid-coordinates.md"
