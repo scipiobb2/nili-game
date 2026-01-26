@@ -30,4 +30,4 @@ Use screen-space coordinates with origin at the **top-left** of the grid.
 - Test fixtures and level data should use `Vector2i` literals with this convention.
 
 ## References
-- Sprint decision ADR-001 recommendation (screen-space, y-down) in `docs/sprints/sprint_1/sprint_1_tasks.yaml`.
+- Sprint 1 closeout summary: `docs/sprints/sprint_1/sprint_1_plan.md`.
